@@ -48,6 +48,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: [ surge_version ]
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: windows-2022
@@ -99,7 +100,9 @@ jobs:
           git checkout surge-7.0.12
 
       - uses: apple-actions/import-codesign-certs@v3
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && env.MAC_CERTS_P12 != ''
+        env:
+          MAC_CERTS_P12: ${{ secrets.MAC_CERTS_P12 }}
         with:
           p12-file-base64: ${{ secrets.MAC_CERTS_P12 }}
           p12-password: ${{ secrets.CERT_PWD }}
